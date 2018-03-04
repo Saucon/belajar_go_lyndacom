@@ -3,14 +3,39 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 )
 
 func main() {
+
 	http.HandleFunc("/", index)
-	http.ListenAndServe(":8080", nil)
+
+	http.HandleFunc("/api/echo", echo)
+
+	//port() menyesuaikan pada Environment Variable
+	http.ListenAndServe(port(), nil)
 }
 
+//Handler untuk "/"
+//Contoh : http://localhost:PORT/
 func index(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Ucon'S Cloud Native Go")
+}
+
+func port() string {
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "8080"
+	}
+	return ":" + port
+}
+
+//Handler untuk "/api/echo"
+//Contoh : http://localhost:PORT/api/echo?message=aaaas
+func echo(w http.ResponseWriter, r *http.Request) {
+	message := r.URL.Query()["message"][0]
+
+	w.Header().Add("Content-Type", "text/plain")
+	fmt.Fprintf(w, message)
 }

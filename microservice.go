@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/saucon/belajar_go_lyndacom/api"
 )
 
 func main() {
 
 	http.HandleFunc("/", index)
 
-	http.HandleFunc("/api/echo", echo)
+	http.HandleFunc("/api/echo", api.Echo)
+
+	http.HandleFunc("/api/books", api.BookHandlerFunc)
 
 	//port() menyesuaikan pada Environment Variable
 	http.ListenAndServe(port(), nil)
@@ -29,13 +33,4 @@ func port() string {
 		port = "8080"
 	}
 	return ":" + port
-}
-
-//Handler untuk "/api/echo"
-//Contoh : http://localhost:PORT/api/echo?message=aaaas
-func echo(w http.ResponseWriter, r *http.Request) {
-	message := r.URL.Query()["message"][0]
-
-	w.Header().Add("Content-Type", "text/plain")
-	fmt.Fprintf(w, message)
 }
